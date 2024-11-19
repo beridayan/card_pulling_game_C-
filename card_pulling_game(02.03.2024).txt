@@ -1,0 +1,196 @@
+using Microsoft.Win32.SafeHandles;
+using System;
+using System.ComponentModel.Design;
+
+namespace card_polling_game
+{
+    internal class Program
+    {
+        private static Random random = new Random();
+
+        static void Main(string[] args)
+        {
+            int[] arr = GenerateRandomArray(20);
+            PrintArray(arr);
+
+            int[] first = new int[10];
+            int[] second = new int[10];
+
+            int x = 0;
+            int y = 1;
+
+            for (int i = 0; i < first.Length; i++)
+            {
+                int result1 = always_winning(arr, x, y);
+                first[i] = result1;
+
+                if (result1 == arr[x])
+                    x++;
+                else
+                    y++;
+
+                PrintPlayerArray("First player", first);
+
+                var result2 = PlayerMove(arr, x, y);
+                second[i] = result2.Choice;
+
+                if (result2.GrowX)
+                    x++;
+                else
+                    y++;
+
+                PrintPlayerArray("Second player", second);
+            }
+
+            int gameWinner = winner(first, second);
+            if (gameWinner == 0)
+            {
+                Console.WriteLine("Second player won");
+            }
+            else if (gameWinner == 1)
+            {
+                Console.WriteLine("First player won");
+            }
+            else
+            {
+                Console.WriteLine("It's a tie");
+            }
+        }
+
+        static int[] GenerateRandomArray(int length)
+        {
+            int[] arr = new int[length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = random.Next(1, 100);
+            }
+            return arr;
+        }
+
+        static void PrintArray(int[] arr)
+        {
+            foreach (var item in arr)
+            {
+                Console.Write($" {item} ,");
+            }
+            Console.WriteLine();
+        }
+        // למדתי שאפשר לעשות פעולה שמחזירה ערך בוליאני וערך מספרי
+        static (int Choice, bool GrowX) PlayerMove(int[] arr, int x, int y)
+        {
+            bool isValidChoice = false;
+            int choice = 0;
+
+            while (!isValidChoice)
+            {
+                Console.WriteLine($"\nChoose between the 2 numbers to take: {arr[x]} or {arr[arr.Length - y]}");
+                choice = int.Parse(Console.ReadLine());
+
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (arr[i] == choice)
+                    {
+                        isValidChoice = true;
+                        break;
+                    }
+                }
+
+                if (!isValidChoice)
+                {
+                    Console.WriteLine("Invalid input. Please enter a number that is inside the list.");
+                }
+            }
+
+            if (choice == arr[x])
+            {
+                arr[x] = 0;
+                return (choice, true); 
+            }
+            else if (choice == arr[arr.Length - y])
+            {
+                arr[arr.Length - y] = 0;
+                return (choice, false);
+            }
+
+            return (choice, false); 
+        }
+
+        static void PrintPlayerArray(string playerName, int[] playerArray)
+        {
+            Console.WriteLine($"{playerName} array:");
+            foreach (var item in playerArray)
+            {
+                Console.Write($" {item} ,");
+            }
+            Console.WriteLine();
+        }
+        static int winner(int[] first, int[] seconde)
+        {
+            int first_total = 0;
+            int seconde_total = 0;
+            int win = 0;
+            for (int i = 0; i < first.Length; i++)
+            {
+                first_total += first[i];
+                seconde_total += seconde[i];
+            }
+            if (seconde_total > first_total)
+            {
+                
+            }
+            else if(first_total > seconde_total)
+                {
+                win = 1;
+            }
+            return win;
+        }
+        //זה הבונוס!!!!
+        static int always_winning(int[] arr, int x, int y)
+        {
+            int count = 0;
+            int county = 0;
+            int choice = 888;// בחרתי ב888 ל-די באגינג
+            
+            if (count == 1)
+            {
+                choice  = arr[arr.Length - y];
+                count = 0;
+                return choice;
+            }
+            if (arr[x] > arr[arr.Length - y ])
+            {
+                if (arr[x+1] > arr[x])
+                {
+                    choice = arr[x];
+                    count++;
+                    return choice;
+                }
+                else
+                {
+                    choice = arr[x];
+                    return choice;
+                }
+            }
+            if (county == 1){
+                choice = arr[x];
+                county = 0;
+                return choice;
+            }
+            if (arr[x] < arr[arr.Length - y])
+            {
+                if (arr[arr.Length - y-1] > arr[arr.Length - y])
+                {
+                    choice = arr[arr.Length - y];
+                    county++;
+                    return choice;
+                }
+                else
+                {
+                    choice = arr[arr.Length-y];
+                    return choice;
+                }
+            }
+                return choice;
+        }
+    }
+}
